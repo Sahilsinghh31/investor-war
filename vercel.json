@@ -5,5 +5,5 @@
     { "source": "/lib/:path*", "destination": "/", "permanent": false },
     { "source": "/dev-server.js", "destination": "/", "permanent": false }
   ],
-  "headers": [{ "source": "/(.*)", "headers": [{ "key": "X-Content-Type-Options", "value": "nosniff" }, { "key": "Referrer-Policy", "value": "no-referrer" }] }]
+  "headers": [{ "source": "/(.*)", "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }, { "key": "X-Content-Type-Options", "value": "nosniff" }, { "key": "Referrer-Policy", "value": "no-referrer" }] }]
 }

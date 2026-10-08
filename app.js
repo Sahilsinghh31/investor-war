@@ -1,4 +1,5 @@
 "use strict";
+const BUILD="2.2.1-clean-start";
 /* ===== MODELS & CONSTANTS ===== */
 const INV={market:{n:'MARKET SHARK'},customer:{n:'CUSTOMER SHARK'},money:{n:'MONEY SHARK'},exec:{n:'EXECUTION SHARK'},devil:{n:'THE DEVIL'}};
 const KEYS=Object.keys(INV),CORE=['market','customer','money','exec'];
@@ -234,8 +235,8 @@ const weakH=()=>{const low=CORE.slice().sort((a,b)=>S.conf[a]-S.conf[b]).slice(0
 function aiNotes(){return''}
 function ovApply(){}
 const save=()=>{try{localStorage.removeItem('iw_s');if(S)localStorage.setItem(S.ns==='demo'?KD:KA,JSON.stringify({S,view}));else{localStorage.removeItem(KA);localStorage.removeItem(KD)}}catch(e){}};
-function restore(){try{localStorage.removeItem('iw_s');const r=JSON.parse(localStorage.getItem(KA)||'null');if(!r||!r.S||!r.S.st||!r.S.sid||r.S.ns!=='user')return;S=r.S;view=r.view||'dash';S.demo=false;S.thinking=false;S.ovJ=null;const n=Date.now();if(S.stage==='war'){S.frozen=false;S.dl=n+(S.left||0)*1000}else if(S.stage==='ambush'||S.stage==='boss')S.sd=n+(S.sl||60)*1000}catch(e){S=null}}
-function render(){$('#nav').innerHTML=NAV.map(([k,n])=>`<button data-v="${k}" class="${k===view?'on':''}" ${k===view?'aria-current="page"':''}>${n}</button>`).join('');
+function restore(){try{localStorage.removeItem('iw_s');const r=JSON.parse(localStorage.getItem(KA)||'null');if(!r||!r.S||!r.S.st||!r.S.sid||r.S.ns!=='user')return;const x=r.S;if(!['scan','war','ambush','boss'].includes(x.stage)||!Array.isArray(x.answers)||!x.conf||!x.risk||x.verdict){localStorage.removeItem(KA);return}S=x;view='dash';S.demo=false;S.thinking=false;S.ovJ=null;const n=Date.now();if(S.stage==='war'){S.frozen=false;S.dl=n+(S.left||0)*1000}else if(S.stage==='ambush'||S.stage==='boss')S.sd=n+(S.sl||60)*1000}catch(e){S=null}}
+function render(){const bd=$('#build');if(bd)bd.textContent='build '+BUILD;$('#nav').innerHTML=NAV.map(([k,n])=>`<button data-v="${k}" class="${k===view?'on':''}" ${k===view?'aria-current="page"':''}>${n}</button>`).join('');
  let h;try{h=(V[view]||V.dash)()}catch(e){console.error(e);h=empty('Something went wrong','Restart the simulation.')}$('#main').innerHTML=h;Object.keys(DRAFT).forEach(id=>{const el=$('#'+id);if(el&&!el.value&&DRAFT[id])el.value=DRAFT[id]});save();demoPlay()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-v],[data-a]');if(!b)return;const a=b.dataset.a;if(b.dataset.v){view=b.dataset.v;if(view==='inv')PF=null;render();return}
  if(a==='demo')newSim(DEMO,true);else if(a==='form'){PF=null;view='inv';render()}

@@ -50,3 +50,6 @@ Opening `index.html` directly also works, in DEMO MODE only (no `/api/ai` there)
 ## Tests
     npm test
 Runs the real `app.js` and `ai-client.js` in a stubbed browser, with the LLM provider mocked. These are **MOCK tests**. No real provider call is made, and nothing here was verified in a real browser or on a real Vercel deployment.
+
+## v2.2.1: clean start
+A first visit to `/` always opens the dashboard. `restore()` only brings back an *unfinished*, structurally valid user simulation (and still opens on the dashboard, with a Resume card); finished runs, demo runs, legacy `iw_s` data and history are never restored as the active simulation. The header shows `build 2.2.1-clean-start`, so you can confirm which code a deployment is serving. `vercel.json` sends `Cache-Control: no-cache` so browsers and the CDN revalidate assets.
