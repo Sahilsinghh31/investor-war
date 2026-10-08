@@ -37,3 +37,16 @@ Opening `index.html` directly also works, in DEMO MODE only (no `/api/ai` there)
 
 ## Files
 `index.html`, `styles.css`, `app.js` (UI and local engine) · `ai-client.js` (browser bridge, falls back to local engine on any error) · `api/ai.js` (Vercel serverless route: rate limit, size limit, no raw errors) · `lib/ai-service.js` (provider call, prompts, typed request and response shapes, validation) · `dev-server.js` · `.env.example`
+
+## v2.2 changes (final pass)
+- **State isolation.** Every simulation has a `sid`. Storage is namespaced: `iw:v3:active` (user simulation, the only thing a refresh restores), `iw:v3:demo` (the MealMind demo, never restored as a user run) and `iw:v3:history` (finished attempts, never read back into live state). Late AI responses are dropped if the simulation they belong to has been replaced.
+- **Demo price.** `₹999 per month` exists only in the built-in `DEMO` constant (the MealMind demo story depends on it). A user simulation uses exactly what was typed; blank means unknown and is never filled in.
+- **Final Boss scoring.** One canonical key set in `app.js` (`BOSS`) and `lib/ai-service.js` (`BOSS_CRITERIA`): Clarity, Evidence, Confidence, Differentiation, Business model, Traction, Objection handling. Provider names are mapped to these on the server and again in the browser; missing criteria fall back to the local score.
+- **Evaluation fixes.** "small-chain" is no longer read as an enterprise claim, and an answer that calls its own numbers an estimate or assumption is capped at STRONG EVIDENCE, never VERIFIED.
+- **Intake** now has all ten fields, each optional field with I DON'T KNOW YET. Unknown fields are listed as investigation targets.
+- **Shark visual.** An original inline SVG shark in the hero and header, plus a mark for each investor. No external images.
+- **vercel.json** sets a 30 s function limit for `/api/ai` and redirects `/lib/*` and `/dev-server.js` away from the public site.
+
+## Tests
+    npm test
+Runs the real `app.js` and `ai-client.js` in a stubbed browser, with the LLM provider mocked. These are **MOCK tests**. No real provider call is made, and nothing here was verified in a real browser or on a real Vercel deployment.

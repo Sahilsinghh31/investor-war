@@ -1,7 +1,7 @@
 {
   "name": "investor-war",
   "private": true,
-  "version": "2.1.0",
-  "scripts": { "dev": "node dev-server.js", "start": "node dev-server.js" },
+  "version": "2.2.0",
+  "scripts": { "dev": "node dev-server.js", "start": "node dev-server.js", "test": "node test/run.js" },
   "engines": { "node": ">=18" }
 }
