@@ -2,6 +2,12 @@
 
 Startup stress-test. Five investor personas (Market, Customer, Money, Execution Shark and The Devil) interrogate a founder. Questions adapt to earlier answers, contradictions and risky assumptions are tracked, confidence and investment probability move with evidence quality, and the run ends in a verdict, validation experiments, a rewritten pitch and a 7-day plan.
 
+## Product flow
+Landing, **Choose Investor** (five original AI investors), **Investor Profile** (role, expertise, personality, live confidence, evidence strength, risk level, current concern), **Start Investor War**, **Initial Pitch** (TEXT or VOICE), interview, Competitor Ambush, Final Boss, Verdict, Validation Lab, Pitch History. The profile cards read the same simulation state as the War Room. The investor you pick opens the war; after that the next investor is always the one with the strongest unresolved risk (a pending contradiction goes to The Devil), never a fixed rotation. Each investor only gives credit to answers that address their own expertise.
+
+## Text and voice input
+Every pitch and answer can be typed or spoken. Voice uses the browser's built-in speech recognition (Chrome, Edge, Safari), so DEMO MODE needs no extra API key. Flow: record, stop, editable transcript ("Transcript ready - review before sending."), EDIT, SUBMIT. Nothing is sent automatically. Both modes go through `normalizeFounderInput({mode, text})` and then the one shared engine, so identical text is evaluated identically; the TEXT/VOICE tag is only stored in the timeline and pitch history and never affects scoring. Handled without crashing: permission denied, no microphone, unsupported browser, empty transcript, cancelled recording. Voice needs HTTPS or localhost (Vercel provides HTTPS).
+
 ## Two modes
 **REAL AI MODE** is active when the server has `LLM_API_KEY`. The browser calls `POST /api/ai`; the server calls the LLM, validates the JSON it returns, and the shared simulation state is updated. The AI does the question writing and investor selection, answer grading, claim, assumption and contradiction extraction, the competitor ambush scenario, ambush and final-boss scoring, and the final report, experiments and pitch rewrite. Probabilities are still computed by the deterministic scoring model from the AI's grades (no random values).
 

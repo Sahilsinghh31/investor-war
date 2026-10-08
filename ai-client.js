@@ -12,12 +12,13 @@ const _render=render;render=function(){_render();setMode()};
 const _nextQ=nextQ,_submit=submit,_toStage=toStage,_subSubmit=subSubmit,_finish=finish;
 nextQ=async function(){if(!useAI()){_nextQ();return}
  const done=think('Investors are conferring on the next question…');
- try{const r=await aiCall('question',{hint:pick()});done();if(!S||S.stage!=='war')return;
-  const inv=INV[r.investor]?r.investor:pick(),c=r.cid&&S.con.find(x=>x.id===r.cid);if(c)c.asked=true;
-  S.cur={n:S.qs.length+1,inv,text:r.question,why:'AI: '+(r.why||'strongest unresolved risk.'),cid:c?c.id:undefined};S.qs.push(S.cur);setNote('');render()}
+ const op=S.opener&&INV[S.opener]&&!S.qs.length?S.opener:null;
+ try{const r=await aiCall('question',{hint:op||pick(),opener:op});done();if(!S||S.stage!=='war')return;
+  const inv=op||(INV[r.investor]?r.investor:pick()),c=r.cid&&S.con.find(x=>x.id===r.cid);if(c)c.asked=true;
+  S.cur={n:S.qs.length+1,inv,text:r.question,why:(op?'You chose '+INV[op].n+' to open the war. ':'')+'AI: '+(r.why||'strongest unresolved risk.'),cid:c?c.id:undefined};S.qs.push(S.cur);setNote('');render()}
  catch(e){done();if(S&&S.stage==='war')_nextQ()}};
 submit=async function(text){if(!useAI()||!S||S.stage!=='war'||!S.cur||AIC.busy){_submit(text);return}
- text=(text||'').trim().slice(0,1200);if(text.length<2)return;AIC.busy=true;const q=S.cur,done=think('The panel is evaluating your answer…');let ov;
+ text=normalizeFounderInput({text}).text.slice(0,1200);if(text.length<2)return;AIC.busy=true;const q=S.cur,done=think('The panel is evaluating your answer…');let ov;
  try{const r=await aiCall('evaluate',{investor:q.inv,question:q.text,answer:text});
   const claims=r.claims.map(c=>({type:MEM[c.type]?c.type:'mkt',q:c.text,text:c.text}));
   ov={grade:r.grade,reason:r.reason,claims,assumptions:r.assumptions,contradiction:r.contradiction}}catch(e){ov=undefined}
@@ -31,7 +32,7 @@ async function aiAmbush(){const done=think('Your biggest competitor is making it
  try{S.ambTxt=(await aiCall('ambush')).scenario}catch(e){S.ambTxt=''}
  done();if(S&&S.stage==='ambush'){S.sd=Date.now()+60000;S.sl=60;render()}}
 subSubmit=async function(){if(!S||(S.stage!=='ambush'&&S.stage!=='boss')||AIC.busy)return;if(!useAI()){_subSubmit();return}
- AIC.busy=true;S.sd=Infinity;const kind=S.stage,t=(($('#ans')||{}).value||'').trim().slice(0,1500);setNote('The panel is judging your response…');
+ AIC.busy=true;S.sd=Infinity;const kind=S.stage,t=normalizeFounderInput({text:inTxt()}).text.slice(0,1500);setNote('The panel is judging your response…');
  try{if(t.length>=3){const r=await aiCall('judge',{kind,text:t,scenario:S.ambTxt||''});
   S.ovJ=kind==='ambush'?{kind,r:{score:r.score,rows:r.criteria.map(c=>[c.name,c.score>=60]),note:r.note||'Scored by the AI panel.'}}:{kind,r:{c:Object.fromEntries(r.criteria.map(c=>[c.name,c.score])),avg:r.score}}}}catch(e){S.ovJ=null}
  AIC.busy=false;if(S&&S.stage===kind){const a=$('#ans');if(a&&!a.value)a.value=t;_subSubmit()}if(S)S.ovJ=null;setNote('')};
